@@ -1,47 +1,47 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'habit.dart';
+part of 'habit_completion.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class HabitAdapter extends TypeAdapter<Habit> {
+class HabitCompletionAdapter extends TypeAdapter<HabitCompletion> {
   @override
-  final typeId = 20;
+  final typeId = 21;
 
   @override
-  Habit read(BinaryReader reader) {
+  HabitCompletion read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Habit(
+    return HabitCompletion(
       id: fields[0] as String,
-      name: fields[1] as String,
-      isActive: fields[2] as bool,
-      createdAt: fields[3] as DateTime,
-      updatedAt: fields[4] as DateTime,
-      deleted: fields[5] as bool,
+      habitId: fields[1] as String,
+      dateLocal: fields[2] as DateTime,
+      isDone: fields[3] as bool,
+      createdAt: fields[4] as DateTime,
+      updatedAt: fields[5] as DateTime,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Habit obj) {
+  void write(BinaryWriter writer, HabitCompletion obj) {
     writer
       ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name)
+      ..write(obj.habitId)
       ..writeByte(2)
-      ..write(obj.isActive)
+      ..write(obj.dateLocal)
       ..writeByte(3)
-      ..write(obj.createdAt)
+      ..write(obj.isDone)
       ..writeByte(4)
-      ..write(obj.updatedAt)
+      ..write(obj.createdAt)
       ..writeByte(5)
-      ..write(obj.deleted);
+      ..write(obj.updatedAt);
   }
 
   @override
@@ -50,7 +50,7 @@ class HabitAdapter extends TypeAdapter<Habit> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is HabitAdapter &&
+      other is HabitCompletionAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -4,15 +4,23 @@
 
 import 'package:hive_ce/hive.dart';
 import 'package:habit_flow/core/models/habit.dart';
+import 'package:habit_flow/core/models/habit_completion.dart';
+import 'package:habit_flow/core/models/sync_meta.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
     registerAdapter(HabitAdapter());
+    registerAdapter(HabitCompletionAdapter());
+    registerAdapter(SyncMetaAdapter());
+    registerAdapter(SyncModeAdapter());
   }
 }
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
     registerAdapter(HabitAdapter());
+    registerAdapter(HabitCompletionAdapter());
+    registerAdapter(SyncMetaAdapter());
+    registerAdapter(SyncModeAdapter());
   }
 }

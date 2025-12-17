@@ -1,78 +1,86 @@
-// features/task_list/widgets/item_list.dart
-
 import 'package:flutter/material.dart';
+import 'package:habit_flow/core/models/habit.dart';
 
 class ItemList extends StatelessWidget {
   const ItemList({
     super.key,
     required this.items,
+    required this.isDoneToday,
+    required this.onToggleDoneToday,
     required this.onEdit,
     required this.onDelete,
   });
 
-  final List<String> items;
-  final void Function(int index, String newItem) onEdit;
-  final void Function(int index) onDelete;
+  final List<Habit> items;
+
+  final bool Function(Habit habit) isDoneToday;
+  final Future<void> Function(Habit habit) onToggleDoneToday;
+  final Future<void> Function(Habit habit, String newName) onEdit;
+  final Future<void> Function(Habit habit) onDelete;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       itemCount: items.length,
       itemBuilder: (context, index) {
+        final habit = items[index];
+        final done = isDoneToday(habit);
+
         return ListTile(
-          title: Text(items[index]),
+          leading: IconButton(
+            icon: Icon(
+              done ? Icons.check_circle : Icons.radio_button_unchecked,
+            ),
+            onPressed: () => onToggleDoneToday(habit),
+          ),
+          title: Text(habit.name),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
-                  TextEditingController editController = TextEditingController(
-                    text: items[index],
+                  final editController = TextEditingController(
+                    text: habit.name,
                   );
+
                   showDialog(
                     context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Task bearbeiten'),
-                        content: TextField(
-                          autofocus: true,
-                          controller: editController,
-                          decoration: const InputDecoration(
-                            hintText: "Task bearbeiten",
-                          ),
+                    builder: (context) => AlertDialog(
+                      title: const Text('Task bearbeiten'),
+                      content: TextField(
+                        autofocus: true,
+                        controller: editController,
+                        decoration: const InputDecoration(
+                          hintText: 'Task bearbeiten',
                         ),
-                        actions: [
-                          TextButton(
-                            child: const Text('Abbrechen'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('Speichern'),
-                            onPressed: () {
-                              onEdit(index, editController.text);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Abbrechen'),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await onEdit(habit, editController.text);
+                            if (context.mounted) Navigator.of(context).pop();
+                          },
+                          child: const Text('Speichern'),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed: () {
-                  onDelete(index);
-                },
+                onPressed: () => onDelete(habit),
               ),
             ],
           ),
         );
       },
-      separatorBuilder: (context, index) =>
+      separatorBuilder: (_, __) =>
           const Divider(thickness: 1, color: Colors.white10),
     );
   }
