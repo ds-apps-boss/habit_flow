@@ -1,5 +1,6 @@
 // core/models/habit_completion.dart
 
+import 'package:habit_flow/core/utils/date_utils.dart';
 import 'package:hive_ce/hive.dart';
 
 part 'habit_completion.g.dart';
@@ -33,6 +34,16 @@ class HabitCompletion {
     required this.createdAt,
     required this.updatedAt,
   });
+
+  Map<String, dynamic> toMap({required String userId}) => {
+    'id': id,
+    'habit_id': habitId,
+    'user_id': userId,
+    'date_local': yyyyMmDd(dateLocal),
+    'is_done': isDone,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'updated_at': updatedAt.toUtc().toIso8601String(),
+  };
 
   HabitCompletion copyWith({bool? isDone, DateTime? updatedAt}) {
     return HabitCompletion(

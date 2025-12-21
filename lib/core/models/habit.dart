@@ -33,6 +33,16 @@ class Habit {
     required this.deleted,
   });
 
+  Map<String, dynamic> toMap({required String userId}) => {
+    'id': id,
+    'user_id': userId,
+    'name': name,
+    'is_active': isActive,
+    'deleted': deleted,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'updated_at': updatedAt.toUtc().toIso8601String(),
+  };
+
   Habit copyWith({
     String? name,
     bool? isActive,

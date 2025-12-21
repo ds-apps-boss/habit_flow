@@ -47,7 +47,6 @@ class _AuthScreenState extends State<AuthScreen> {
         await auth.signInWithPassword(email: email, password: password);
       } else {
         await auth.signUp(email: email, password: password);
-        // Если в Supabase отключено email confirmation — ты сразу будешь залогинен.
       }
 
       if (!mounted) return;
@@ -90,18 +89,22 @@ class _AuthScreenState extends State<AuthScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _loading ? null : _submit,
-                child: Text(_loading
-                    ? 'Bitte warten...'
-                    : (_isLogin ? 'Einloggen' : 'Registrieren')),
+                child: Text(
+                  _loading
+                      ? 'Bitte warten...'
+                      : (_isLogin ? 'Einloggen' : 'Registrieren'),
+                ),
               ),
             ),
             TextButton(
               onPressed: _loading
                   ? null
                   : () => setState(() => _isLogin = !_isLogin),
-              child: Text(_isLogin
-                  ? 'Noch kein Konto? Registrieren'
-                  : 'Schon ein Konto? Einloggen'),
+              child: Text(
+                _isLogin
+                    ? 'Noch kein Konto? Registrieren'
+                    : 'Schon ein Konto? Einloggen',
+              ),
             ),
           ],
         ),

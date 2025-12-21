@@ -1,6 +1,6 @@
-// features/task_list/screens/list_screen.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+//import 'package:hive_ce/hive.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:habit_flow/core/models/habit.dart';
 import 'package:habit_flow/core/models/habit_completion.dart';
@@ -8,31 +8,23 @@ import 'package:habit_flow/core/utils/date_utils.dart';
 import 'package:habit_flow/core/widgets/app_bar.dart';
 import 'package:habit_flow/features/task_list/widgets/empty_content.dart';
 import 'package:habit_flow/features/task_list/widgets/item_list.dart';
+import 'package:habit_flow/core/providers/hive_providers.dart';
 import 'package:uuid/uuid.dart';
 
-class ListScreen extends StatefulWidget {
+class ListScreen extends ConsumerStatefulWidget {
   const ListScreen({super.key});
 
   @override
-  State<ListScreen> createState() => _ListScreenState();
+  ConsumerState<ListScreen> createState() => _ListScreenState();
 }
 
-class _ListScreenState extends State<ListScreen> {
+class _ListScreenState extends ConsumerState<ListScreen> {
   final _uuid = const Uuid();
 
-  late final Box<Habit> habitsBox;
-  late final Box<HabitCompletion> completionsBox;
-
-  @override
-  void initState() {
-    super.initState();
-    habitsBox = Hive.box<Habit>('habits');
-    completionsBox = Hive.box<HabitCompletion>('habit_completions');
-  }
-
   Future<void> addHabit() async {
-    final controller = TextEditingController();
+    final habitsBox = ref.read(habitsBoxProvider);
 
+    final controller = TextEditingController();
     final name = await showDialog<String?>(
       context: context,
       builder: (context) => AlertDialog(
@@ -68,12 +60,13 @@ class _ListScreenState extends State<ListScreen> {
       deleted: false,
     );
 
-    await habitsBox.put(habit.id, habit); // key = id
+    await habitsBox.put(habit.id, habit);
   }
 
   Future<void> editHabit(Habit habit) async {
-    final controller = TextEditingController(text: habit.name);
+    final habitsBox = ref.read(habitsBoxProvider);
 
+    final controller = TextEditingController(text: habit.name);
     final newName = await showDialog<String?>(
       context: context,
       builder: (context) => AlertDialog(
@@ -106,11 +99,15 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> deleteHabit(Habit habit) async {
+    final habitsBox = ref.read(habitsBoxProvider);
     await habitsBox.delete(habit.id);
   }
 
   @override
   Widget build(BuildContext context) {
+    final habitsBox = ref.watch(habitsBoxProvider);
+    final completionsBox = ref.watch(habitCompletionsBoxProvider);
+
     return Scaffold(
       appBar: const HabitAppBar(),
       floatingActionButton: FloatingActionButton(
@@ -120,7 +117,6 @@ class _ListScreenState extends State<ListScreen> {
       body: ValueListenableBuilder(
         valueListenable: habitsBox.listenable(),
         builder: (context, Box<Habit> habitsBox, _) {
-          // чтобы UI реагировал и на изменения completions тоже:
           return ValueListenableBuilder(
             valueListenable: completionsBox.listenable(),
             builder: (context, Box<HabitCompletion> completionsBox, __) {
@@ -145,7 +141,7 @@ class _ListScreenState extends State<ListScreen> {
                   await completionsBox.put(
                     key,
                     HabitCompletion(
-                      id: key, // ок для 1 раза в день
+                      id: key,
                       habitId: habit.id,
                       dateLocal: today,
                       isDone: true,
